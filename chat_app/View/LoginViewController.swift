@@ -8,8 +8,25 @@
 import SwiftUI
 
 struct LoginViewController: View {
+    @State private var username = ""
+    @State private var password = ""
     var body: some View {
-        Text(/*@START_MENU_TOKEN@*/"Hello, World!"/*@END_MENU_TOKEN@*/)
+        VStack {
+            Text("Wellcome to Chat App")
+            TextField("User name:", text: $username).frame(height: 40).background(RoundedRectangle(cornerRadius: 5, style: .continuous)
+                .stroke(Color.gray, lineWidth: 1)).padding([.leading, .trailing], 30)
+            TextField("Password:", text: $username).frame(height: 40).background(RoundedRectangle(cornerRadius: 5, style: .continuous)
+                .stroke(Color.gray, lineWidth: 1)).padding([.leading, .trailing], 30)
+            
+            Button {
+                
+            } label: {
+                Text("Login").foregroundColor(.white)
+            }.frame(width: 200,height: 40).background(RoundedRectangle(cornerRadius: 5, style: .continuous)
+                .foregroundColor(.blue)
+                )
+
+        }
     }
 }
 
