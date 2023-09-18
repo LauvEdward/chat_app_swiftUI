@@ -11,32 +11,47 @@ struct Signup: View {
     @State var email = ""
     @State var password = ""
     @State var displayname = ""
-    
+    @State var errorMassage = ""
+    @Binding var isPresented: Bool
+    @State var isRegisterSuccess = false
     private var isFormValid: Bool {
-        !email.isEmptyOrWhiteSpace && !password.isEmptyOrWhiteSpace && !displayname.isEmptyOrWhiteSpace
+        !email.isEmptyOrWhiteSpace && !password.isEmptyOrWhiteSpace
     }
-    var body: some View {
-        Form {
-            Text(/*@START_MENU_TOKEN@*/"Hello, World!"/*@END_MENU_TOKEN@*/)
-            TextField("Email", text: $email)
-            TextField("Password", text: $password)
-            TextField("Display name", text: $displayname)
-            HStack {
-                Spacer()
-                Button("Sign up") {
-                    
-                }.disabled(!isFormValid)
-                Button("Login") {
-                    
-                }
-                Spacer()
+    func registerAccount() async {
+         let result = await FirebaseManager.shared.resigter(email: email, pass: password)
+        switch result {
+        case .failure(let err):
+            errorMassage = err.localizedDescription
+        case .success(let data):
+            if let data = data {
+                await FirebaseManager.shared.updateDisplayName(user: data.user)
+                isRegisterSuccess = true
             }
         }
+    }
+    var body: some View {
+        VStack {
+            Text("Sign up your account")
+            TextField("Email", text: $email).CommonTextField()
+            TextField("Password", text: $password).CommonTextField()
+            Button() {
+                Task {
+                    await registerAccount()
+                }
+            } label: {
+                Text("Sign up").foregroundColor(.white)
+            }.CommonButton(frame: CGRect(x: 0, y: 0, width: 200, height: 50)).disabled(!isFormValid).alert(isPresented: $isRegisterSuccess) {
+                Alert(title: Text("Register account success"), message: Text("Please, login with your account you did register"), dismissButton: .default(Text("OK"), action: {
+                    isPresented = false
+                }))
+            }
+        }
+        Text(errorMassage)
     }
 }
 
 struct Signup_Previews: PreviewProvider {
     static var previews: some View {
-        Signup()
+        Signup(isPresented: .constant(true))
     }
 }

@@ -10,21 +10,29 @@ import SwiftUI
 struct Login: View {
     @State private var username = ""
     @State private var password = ""
+    @State private var register = false
+    func login() async {
+        let result = await FirebaseManager.shared.login(email: username, pass: password)
+    }
     var body: some View {
-        VStack {
-            Text("Wellcome to Chat App").bold()
-            TextField("User name:", text: $username).frame(height: 40).background(RoundedRectangle(cornerRadius: 5, style: .continuous)
-                .stroke(Color.gray, lineWidth: 1)).padding([.leading, .trailing], 30)
-            TextField("Password:", text: $username).frame(height: 40).background(RoundedRectangle(cornerRadius: 5, style: .continuous)
-                .stroke(Color.gray, lineWidth: 1)).padding([.leading, .trailing], 30)
-            Button {
-                FirebaseManager.shared.login()
-            } label: {
-                Text("Login").foregroundColor(.white)
-            }.frame(width: 200,height: 40).background(RoundedRectangle(cornerRadius: 5, style: .continuous)
-                .foregroundColor(.blue)
-            )
-            
+            VStack {
+                Text("Wellcome to Chat App").bold()
+                TextField("User name:", text: $username).CommonTextField()
+                TextField("Password:", text: $username).CommonTextField()
+                Button {
+                    Task {
+                        await login()
+                    }
+                } label: {
+                    Text("Login").foregroundColor(.white)
+                }.CommonButton(frame: CGRect(x: 0, y: 0, width: 200, height: 50))
+                Text("Are you already have account? Register.").font(.system(size: 14)).foregroundColor(.red).onTapGesture {
+                    register = true
+                }.sheet(isPresented: $register, onDismiss: {
+                    register = false
+                }) {
+                    Signup(isPresented: $register)
+                }
         }
     }
 }

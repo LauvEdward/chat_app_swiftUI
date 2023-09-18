@@ -1,19 +1,27 @@
-//
-//  FirebaseManager.swift
-//  chat_app
-//
-//  Created by Mojave on 30/08/2023.
-//
-
 import Foundation
 import FirebaseAuth
 class FirebaseManager {
     static let shared = FirebaseManager()
-    func login(email: String, pass: String, completion: ()->()) {
-        print("Firebase Manager login")
-        Auth.auth().createUser(withEmail: email, password: pass, completion: { authResult, err in
-            <#code#>
-        })
+    func updateDisplayName(user: User) async {
+        let profileUser = user.createProfileChangeRequest()
+        profileUser.displayName = user.displayName
+        try? await profileUser.commitChanges()
+    }
+    func login(email: String, pass: String) async -> Result<AuthDataResult?, Error> {
+        do {
+            let result = try await Auth.auth().signIn(withEmail: email, password: pass)
+            return .success(result)
+        } catch(let err) {
+            return .failure(err)
+        }
         
+    }
+    func resigter(email: String, pass: String) async -> Result<AuthDataResult?, Error> {
+        do {
+            let result = try await Auth.auth().signIn(withEmail: email, password: pass)
+            return .success(result)
+        } catch(let err) {
+            return .failure(err)
+        }
     }
 }
